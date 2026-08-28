@@ -1,0 +1,15 @@
+# Python & Virtual Environment
+__pycache__/
+*.pyc
+venv/
+.venv/
+.vscode/
+
+# Data and Raw Images
+data/
+outputs/models/
+outputs/plots/
+
+# OS Specific
+.DS_Store
+Thumbs.db
