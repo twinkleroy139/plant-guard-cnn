@@ -64,7 +64,7 @@ else:
 
 # Prediction Section
 if image is not None:
-    st.image(image, caption="Analyzed Leaf Sample", use_column_width=True)
+    st.image(image, caption="Analyzed Leaf Sample", use_container_width=True)
     
     if st.button("Run Diagnostic Analysis"):
         with st.spinner("Processing through Convolutional Neural Network..."):
