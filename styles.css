@@ -1,0 +1,36 @@
+/* Custom Plant-Guard App Styling */
+.stApp {
+    background-color: #f4f9f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+    color: #2e7d32 !important;
+    font-weight: 700 !important;
+}
+
+h3 {
+    color: #388e3c !important;
+}
+
+/* Style main action buttons */
+.stButton>button {
+    background-color: #4caf50;
+    color: white;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.stButton>button:hover {
+    background-color: #388e3c;
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+/* Card containers */
+div.stMarkdown {
+    color: #333333;
+}

@@ -12,11 +12,20 @@ st.set_page_config(
     layout="centered"
 )
 
-# App Header
-st.title("🌿 Plant-Guard: Crop Disease Detection")
-st.markdown("Upload or capture a photo of a plant leaf to instantly detect whether it's **Healthy** or **Diseased**.")
+# Load External Stylesheet
+def load_css(file_path):
+    if os.path.exists(file_path):
+        with open(file_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Load Model Function (Cached for performance)
+load_css("static/styles.css")
+
+# App Header
+st.title("🌿 Plant-Guard")
+st.markdown("### AI-Powered Crop Disease Diagnostic System")
+st.write("Upload a clear photo of a plant leaf or capture one directly using your camera to receive an instant CNN classification.")
+
+# Load Model (Cached)
 @st.cache_resource
 def load_model():
     class_names = ['diseased', 'healthy']
@@ -27,41 +36,38 @@ def load_model():
     
     if os.path.exists(model_path):
         model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
-    else:
-        st.warning("Trained model weights not found locally. Using uninitialized model for demo structure.")
     
     model.eval()
     return model, class_names
 
 model, class_names = load_model()
 
-# Image Preprocessing Pipeline
+# Image Transformation Pipeline
 transform = transforms.Compose([
     transforms.Resize((128, 128)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-# Input Options: File Uploader or Camera
-option = st.radio("Choose input method:", ("Upload Leaf Image", "Capture via Camera"))
+# Input Interface Selection
+input_method = st.radio("Select Input Method:", ("Upload Image File", "Capture via Camera"))
 
 image = None
-if option == "Upload Leaf Image":
-    uploaded_file = st.file_uploader("Upload an image file (.jpg, .png, .webp)", type=["jpg", "jpeg", "png", "webp"])
+if input_method == "Upload Image File":
+    uploaded_file = st.file_uploader("Choose a leaf image...", type=["jpg", "jpeg", "png", "webp"])
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert('RGB')
 else:
-    camera_file = st.camera_input("Take a picture of the leaf")
+    camera_file = st.camera_input("Position leaf in front of camera")
     if camera_file is not None:
         image = Image.open(camera_file).convert('RGB')
 
-# Display and Predict
+# Prediction Section
 if image is not None:
-    st.image(image, caption="Selected Leaf Image", use_column_width=True)
+    st.image(image, caption="Analyzed Leaf Sample", use_column_width=True)
     
-    if st.button("Diagnose Plant"):
-        with st.spinner("Analyzing leaf patterns using CNN..."):
-            # Preprocess and predict
+    if st.button("Run Diagnostic Analysis"):
+        with st.spinner("Processing through Convolutional Neural Network..."):
             input_tensor = transform(image).unsqueeze(0)
             
             with torch.no_grad():
@@ -72,10 +78,8 @@ if image is not None:
             result = class_names[predicted_class.item()]
             conf_percentage = confidence.item() * 100
             
-            # Show Results visually
             st.markdown("---")
-            st.subheader("Diagnostic Results")
             if result == "healthy":
-                st.success(f"**Diagnosis: HEALTHY** ({conf_percentage:.2f}% Confidence)")
+                st.success(f"### Result: HEALTHY Leaf\n**Confidence Score:** {conf_percentage:.2f}%")
             else:
-                st.error(f"**Diagnosis: DISEASED** ({conf_percentage:.2f}% Confidence)")
+                st.error(f"### Result: DISEASED Leaf\n**Confidence Score:** {conf_percentage:.2f}%")
